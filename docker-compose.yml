@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  attendex-db:
+    image: mysql:8.0
+    container_name: attendex-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: attendex_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Spring Boot Backend Service
+  attendex-api:
+    build: .
+    container_name: attendex-backend
+    restart: always
+    depends_on:
+      attendex-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:mysql://attendex-db:3306/attendex_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: root
+      DB_PASSWORD: rootpassword
+      PORT: 8080
+
+volumes:
+  mysql_data:
