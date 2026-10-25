@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Faculty Profile')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-person-badge text-success me-2"></i>Faculty Profile</h3>
+            <p class="text-muted small mb-0">Personal details, departmental affiliation, and account security.</p>
+        </div>
+        <a th:href="@{/faculty/dashboard}" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-person-check text-success me-2"></i>Faculty Information</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-2">
+                            <i class="bi bi-person-badge fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0" th:text="${faculty.user.fullName}">Faculty Name</h5>
+                        <small class="text-muted" th:text="${faculty.designation ?: 'Faculty Member'}">Designation</small>
+                    </div>
+
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Employee ID:</span>
+                            <strong th:text="${faculty.employeeId}"></strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Department:</span>
+                            <span class="fw-semibold" th:text="${faculty.department != null ? faculty.department.name : 'Unassigned'}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Email:</span>
+                            <span th:text="${faculty.user.email}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Username:</span>
+                            <code th:text="${faculty.user.username}"></code>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-key text-success me-2"></i>Change Password</h6>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/faculty/password/change}" th:object="${changePasswordDto}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Current Password *</label>
+                            <input type="password" th:field="*{currentPassword}" class="form-control" placeholder="Enter current password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">New Password *</label>
+                            <input type="password" th:field="*{newPassword}" class="form-control" placeholder="At least 6 characters" required minlength="6">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold">Confirm New Password *</label>
+                            <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Re-enter new password" required>
+                        </div>
+                        <button type="submit" class="btn btn-success px-4 rounded-pill">
+                            <i class="bi bi-check-lg me-1"></i> Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

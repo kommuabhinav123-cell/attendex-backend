@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Enrollments')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-journal-plus text-primary me-2"></i>Subject Enrollments</h3>
+            <p class="text-muted small mb-0">Enroll students into course subjects to enable attendance recording.</p>
+        </div>
+        <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    </div>
+
+    <!-- Enroll Form -->
+    <div class="card shadow-sm border-0 mb-4 rounded-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Enroll Student in Subject</h6>
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/admin/enrollments/add}" method="post" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold">Select Student *</label>
+                    <select name="studentId" class="form-select" required>
+                        <option value="">-- Choose Student --</option>
+                        <option th:each="s : ${students}" th:value="${s.id}"
+                                th:text="${s.user.fullName + ' (' + s.rollNumber + ')'}"></option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold">Select Subject *</label>
+                    <select name="subjectId" class="form-select" required>
+                        <option value="">-- Choose Subject --</option>
+                        <option th:each="sub : ${subjects}" th:value="${sub.id}"
+                                th:text="${sub.name + ' (' + sub.code + ') - ' + sub.course.name}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-check-lg me-1"></i> Enroll</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enrollments List -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-bold text-dark">Active Subject Enrollments</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">Student Roll</th>
+                            <th>Student Name</th>
+                            <th>Subject</th>
+                            <th>Subject Code</th>
+                            <th>Enrolled Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e : ${enrollments}">
+                            <td class="ps-4 fw-semibold text-dark" th:text="${e.student.rollNumber}"></td>
+                            <td th:text="${e.student.user.fullName}"></td>
+                            <td th:text="${e.subject.name}"></td>
+                            <td><span class="badge bg-primary-subtle text-primary" th:text="${e.subject.code}"></span></td>
+                            <td th:text="${e.enrolledDate}"></td>
+                            <td><span class="badge bg-success rounded-pill">Active</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(enrollments)}">
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                                No active enrollments found. Use the form above to enroll students into subjects.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

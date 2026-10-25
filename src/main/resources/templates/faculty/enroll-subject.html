@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Enroll Teaching Subject')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-journal-plus text-success me-2"></i>Enroll Teaching Subject</h3>
+            <p class="text-muted small mb-0">Select and enroll in course subjects and sections you are teaching this semester.</p>
+        </div>
+        <a th:href="@{/faculty/dashboard}" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    </div>
+
+    <!-- Self-Enrollment Form -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-header bg-success text-white py-3">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-check2-circle me-2"></i>Enroll in Subject to Teach</h6>
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/faculty/subjects/enroll}" method="post" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Teaching Subject *</label>
+                    <select name="subjectId" class="form-select" required>
+                        <option value="">-- Choose Subject --</option>
+                        <option th:each="s : ${subjects}" th:value="${s.id}"
+                                th:text="${s.name + ' (' + s.code + ') - ' + (s.course != null ? s.course.name : '')}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Class Section *</label>
+                    <select name="classSectionId" class="form-select" required>
+                        <option value="">-- Choose Section --</option>
+                        <option th:each="cs : ${sections}" th:value="${cs.id}"
+                                th:text="${cs.name + ' (Yr ' + cs.year + ', Sem ' + cs.semester + ')'}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Teaching Start Date *</label>
+                    <input type="date" name="startDate" class="form-control" th:value="${today}" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">End Date (Optional)</label>
+                    <input type="date" name="endDate" class="form-control">
+                </div>
+                <div class="col-12 text-end mt-3">
+                    <button type="submit" class="btn btn-success px-4 rounded-pill">
+                        <i class="bi bi-plus-circle me-1"></i> Enroll in Subject
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Currently Enrolled Subjects for This Faculty -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-bookmark-check text-success me-2"></i>My Currently Enrolled Teaching Subjects</h6>
+            <span class="badge bg-success-subtle text-success" th:text="${#lists.size(myAssignments) + ' Active'}"></span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Subject</th>
+                            <th>Code</th>
+                            <th>Class Section</th>
+                            <th>Semester</th>
+                            <th>Dates / Duration</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="a, iter : ${myAssignments}">
+                            <td class="ps-4 text-muted small" th:text="${iter.count}"></td>
+                            <td>
+                                <strong class="text-dark" th:text="${a.subject.name}"></strong>
+                                <br><small class="text-muted" th:text="${a.subject.course != null ? a.subject.course.name : ''}"></small>
+                            </td>
+                            <td><span class="badge bg-secondary-subtle text-dark" th:text="${a.subject.code}"></span></td>
+                            <td><span class="badge bg-light text-dark border" th:text="${a.classSection.name}"></span></td>
+                            <td th:text="'Sem ' + ${a.classSection.semester}"></td>
+                            <td class="small">
+                                <span th:if="${a.startDate != null}">
+                                    <i class="bi bi-calendar3 me-1 text-muted"></i>
+                                    <span th:text="${#temporals.format(a.startDate, 'dd MMM yyyy')}"></span>
+                                    <span th:if="${a.endDate != null}" th:text="' to ' + ${#temporals.format(a.endDate, 'dd MMM yyyy')}"></span>
+                                </span>
+                                <span th:unless="${a.startDate != null}" class="text-muted">Ongoing</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a th:href="@{/faculty/attendance/mark(assignmentId=${a.id})}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                        <i class="bi bi-check2-square me-1"></i> Mark
+                                    </a>
+                                    <form th:action="@{/faculty/subjects/{id}/drop(id=${a.id})}" method="post" class="d-inline"
+                                          onsubmit="return confirm('Drop / de-assign this subject from your teaching list?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2" title="Drop subject">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(myAssignments)}">
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-journal-x fs-1 d-block mb-2 opacity-50"></i>
+                                You have not enrolled in any teaching subjects yet. Use the form above to enroll.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

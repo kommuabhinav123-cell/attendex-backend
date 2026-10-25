@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Faculty Dashboard')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-speedometer2 text-success me-2"></i>Faculty Workspace</h3>
+            <p class="text-muted small mb-0">Welcome back, <strong th:text="${faculty.user.fullName}">Faculty</strong> (<span th:text="${faculty.designation != null ? faculty.designation : 'Faculty'}"></span>).</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a th:href="@{/faculty/subjects/enroll}" class="btn btn-success"><i class="bi bi-journal-plus me-1"></i> Enroll Subject</a>
+            <a th:href="@{/faculty/profile}" class="btn btn-outline-primary"><i class="bi bi-person-circle me-1"></i> My Profile</a>
+            <a th:href="@{/faculty/sessions}" class="btn btn-outline-secondary"><i class="bi bi-clock-history me-1"></i> Past Sessions</a>
+            <a th:href="@{/faculty/low-attendance}" class="btn btn-outline-danger">
+                <i class="bi bi-exclamation-triangle me-1"></i> Low Attendance (<span th:text="${#lists.size(lowAttendanceList)}">0</span>)
+            </a>
+        </div>
+    </div>
+
+    <!-- Low Attendance Warning Card if any -->
+    <div th:if="${not #lists.isEmpty(lowAttendanceList)}" class="alert alert-warning shadow-sm border-0 rounded-4 d-flex align-items-center justify-content-between p-3 mb-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-circle-fill text-warning fs-3 me-3"></i>
+            <div>
+                <strong>Attendance Notice:</strong> There are <span th:text="${#lists.size(lowAttendanceList)}">0</span> students falling below the mandatory <span th:text="${minPercentage + '%'}">75%</span> attendance mark in your subjects.
+            </div>
+        </div>
+        <a th:href="@{/faculty/low-attendance}" class="btn btn-warning btn-sm fw-semibold">View Students</a>
+    </div>
+
+    <!-- Assigned Classes -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-success text-white py-3">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-journal-check me-2"></i>Assigned Classes &amp; Mark Attendance</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">Subject</th>
+                            <th>Code</th>
+                            <th>Class Section</th>
+                            <th>Credits</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="a : ${assignments}">
+                            <td class="ps-4 fw-bold text-dark" th:text="${a.subject.name}"></td>
+                            <td><span class="badge bg-success-subtle text-success" th:text="${a.subject.code}"></span></td>
+                            <td><span class="badge bg-light text-dark border" th:text="${a.classSection.name}"></span></td>
+                            <td th:text="${a.subject.credits}"></td>
+                            <td class="text-end pe-4">
+                                <a th:href="@{/faculty/attendance/mark(assignmentId=${a.id})}" class="btn btn-success btn-sm px-3 rounded-pill">
+                                    <i class="bi bi-check2-square me-1"></i> Take Attendance
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(assignments)}">
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                                No classes have been assigned to your account yet. Please contact your college administrator.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Sessions -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history text-primary me-2"></i>Recent Attendance Sessions</h6>
+            <a th:href="@{/faculty/sessions}" class="small text-decoration-none">View All</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">Date</th>
+                            <th>Subject</th>
+                            <th>Section</th>
+                            <th>Period</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${recentSessions}">
+                            <td class="ps-4 fw-semibold" th:text="${s.sessionDate}"></td>
+                            <td th:text="${s.subject.name}"></td>
+                            <td th:text="${s.classSection.name}"></td>
+                            <td><span class="badge bg-light text-dark border" th:text="'Period ' + ${s.sessionNumber}"></span></td>
+                            <td>
+                                <span class="badge rounded-pill"
+                                      th:classappend="${s.status.name() == 'OPEN'} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${s.status}"></span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a th:href="@{/faculty/attendance/view/{id}(id=${s.id})}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                    <i class="bi bi-eye me-1"></i> View / Edit
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentSessions)}">
+                            <td colspan="6" class="text-center py-4 text-muted small">
+                                No sessions recorded yet. Use the "Take Attendance" button above to create one.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

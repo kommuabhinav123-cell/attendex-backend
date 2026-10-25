@@ -1,0 +1,119 @@
+/* ============================================
+   Attendex — Custom Styles
+   Clean modern blue, white, and light-gray theme
+   ============================================ */
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+    line-height: 1.6;
+}
+
+/* Nav links */
+.navbar {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+}
+
+.tracking-wide {
+    letter-spacing: 0.05em;
+}
+
+.letter-spacing-1 {
+    letter-spacing: 0.1em;
+}
+
+.hover-text-white:hover {
+    color: #ffffff !important;
+}
+
+/* Subtle animations */
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Sidebar styling */
+.sidebar .nav-link {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: #2563eb !important;
+    font-weight: 600;
+}
+
+.sidebar .nav-link:hover:not(.active) {
+    background-color: #f1f5f9;
+}
+
+/* Rounded Cards */
+.card {
+    border-radius: 1rem;
+}
+
+/* Badges */
+.badge {
+    padding: 0.45em 0.75em;
+    font-weight: 500;
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.btn-white {
+    background-color: #ffffff;
+}
+
+.btn-white:hover {
+    background-color: #f8fafc;
+}
+
+/* Focus outline */
+.form-control:focus,
+.form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Dashboard')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-speedometer2 text-info me-2"></i>Student Attendance Portal</h3>
+            <p class="text-muted small mb-0">Welcome, <strong th:text="${student.user.fullName}">Student</strong> (Roll No: <span th:text="${student.rollNumber}"></span>).</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a th:href="@{/student/profile}" class="btn btn-outline-primary btn-sm"><i class="bi bi-person me-1"></i> Profile &amp; Password</a>
+        </div>
+    </div>
+
+    <!-- Low Attendance Warning Alert -->
+    <div th:if="${showWarning}" class="alert alert-danger shadow-sm border-0 rounded-4 d-flex align-items-center p-3 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-2 me-3 text-danger"></i>
+        <div>
+            <h6 class="alert-heading fw-bold mb-1">Attendance Below Minimum Requirement!</h6>
+            <p class="mb-0 small">
+                Your cumulative overall attendance stands at
+                <strong class="text-danger" th:text="${#numbers.formatDecimal(overallPercentage, 1, 1) + '%'}"></strong>,
+                which is strictly below the required institutional minimum of <strong th:text="${minPercentage + '%'}">75%</strong>.
+                Please ensure you attend upcoming classes or contact your faculty advisor.
+            </p>
+        </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white h-100"
+                 th:classappend="${overallPercentage < minPercentage} ? 'border border-danger border-2' : ''">
+                <span class="text-muted small text-uppercase fw-bold">Overall Attendance</span>
+                <div class="display-4 fw-bold my-2"
+                     th:classappend="${overallPercentage < minPercentage} ? 'text-danger' : 'text-success'"
+                     th:text="${#numbers.formatDecimal(overallPercentage, 1, 1) + '%'}">0%</div>
+                <div class="small text-muted">
+                    Requirement: <span class="fw-bold" th:text="${minPercentage + '%'}">75%</span>
+                    <span th:if="${overallPercentage >= minPercentage}" class="badge bg-success-subtle text-success ms-1">Eligible</span>
+                    <span th:if="${overallPercentage < minPercentage}" class="badge bg-danger-subtle text-danger ms-1">Defaulter</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white h-100">
+                <span class="text-muted small text-uppercase fw-bold">Academic Affiliation</span>
+                <h4 class="fw-bold text-dark my-2" th:text="${student.department != null ? student.department.name : 'Unassigned'}"></h4>
+                <div class="small text-muted">
+                    Section: <span class="badge bg-light text-dark border" th:text="${student.classSection != null ? student.classSection.name : 'N/A'}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white h-100">
+                <span class="text-muted small text-uppercase fw-bold">Enrolled Subjects</span>
+                <div class="display-4 fw-bold text-primary my-2" th:text="${#lists.size(subjectWise)}">0</div>
+                <div class="small text-muted">Active course units this term</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Breakdown Table -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-bar-chart-line text-primary me-2"></i>Subject-Wise Attendance Breakdown</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">Subject</th>
+                            <th>Code</th>
+                            <th class="text-center">Present</th>
+                            <th class="text-center">Late</th>
+                            <th class="text-center">Absent</th>
+                            <th class="text-center">Total Sessions</th>
+                            <th style="min-width: 180px;">Attendance %</th>
+                            <th class="text-end pe-4">Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${subjectWise}">
+                            <td class="ps-4 fw-bold text-dark" th:text="${s.subjectName}"></td>
+                            <td><span class="badge bg-secondary-subtle text-dark" th:text="${s.subjectCode}"></span></td>
+                            <td class="text-center text-success fw-semibold" th:text="${s.presentCount}"></td>
+                            <td class="text-center text-warning fw-semibold" th:text="${s.lateCount}"></td>
+                            <td class="text-center text-danger fw-semibold" th:text="${s.absentCount}"></td>
+                            <td class="text-center fw-bold text-dark" th:text="${s.totalSessions}"></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                        <div class="progress-bar rounded-pill"
+                                             th:classappend="${s.percentage < minPercentage} ? 'bg-danger' : 'bg-success'"
+                                             role="progressbar"
+                                             th:style="'width: ' + ${s.percentage} + '%'">
+                                        </div>
+                                    </div>
+                                    <span class="small fw-bold"
+                                          th:classappend="${s.percentage < minPercentage} ? 'text-danger' : 'text-success'"
+                                          th:text="${#numbers.formatDecimal(s.percentage, 1, 1) + '%'}"></span>
+                                </div>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a th:href="@{/student/attendance/{id}(id=${s.subjectId})}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                    <i class="bi bi-clock-history me-1"></i> Log
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(subjectWise)}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                                No enrolled subjects found for your profile. Please contact the administrator.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Attendance Activity -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history text-secondary me-2"></i>Recent Attendance Records</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">Date</th>
+                            <th>Subject</th>
+                            <th>Period</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${recentRecords}">
+                            <td class="ps-4 fw-semibold text-dark" th:text="${r.attendanceSession.sessionDate}"></td>
+                            <td th:text="${r.attendanceSession.subject.name}"></td>
+                            <td><span class="badge bg-light text-dark border" th:text="'Period ' + ${r.attendanceSession.sessionNumber}"></span></td>
+                            <td>
+                                <span class="badge rounded-pill"
+                                      th:classappend="${r.status.name() == 'PRESENT'} ? 'bg-success' : (${r.status.name() == 'LATE'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      th:text="${r.status}"></span>
+                            </td>
+                            <td class="text-muted small" th:text="${r.remarks ?: '-'}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentRecords)}">
+                            <td colspan="5" class="text-center py-4 text-muted small">No attendance records logged yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

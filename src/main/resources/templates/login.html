@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sign In')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <!-- Brand Header -->
+            <div class="text-center mb-4">
+                <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3">
+                    <svg width="44" height="44" viewBox="0 0 32 32">
+                        <circle cx="16" cy="16" r="14" fill="#0d6efd" opacity="0.2"/>
+                        <path d="M10 16l4 4 8-8" stroke="#0d6efd" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">Attendex Portal</h3>
+                <p class="text-muted small">Sign in with credentials provided by administrator</p>
+            </div>
+
+            <!-- Alert Messages -->
+            <div th:if="${param.error}" class="alert alert-danger shadow-sm border-0 alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> Invalid username or password. Please try again.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${param.logout}" class="alert alert-info shadow-sm border-0 alert-dismissible fade show">
+                <i class="bi bi-check-circle-fill me-2"></i> You have successfully logged out.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${successMessage}" class="alert alert-success shadow-sm border-0 alert-dismissible fade show">
+                <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger shadow-sm border-0 alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Direct Login Card -->
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label small fw-semibold text-muted">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                                <input type="text" id="username" name="username" class="form-control border-start-0 ps-0"
+                                       placeholder="Enter your username" required autofocus>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label small fw-semibold text-muted">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                                <input type="password" id="password" name="password" class="form-control border-start-0 ps-0"
+                                       placeholder="Enter your password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 shadow-sm fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer text-center bg-white border-0 py-3 rounded-bottom-4">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Accounts are assigned and managed by institution administrators.
+                    </small>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a th:href="@{/}" class="text-decoration-none text-muted small">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

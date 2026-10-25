@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<!-- Hero Section -->
+<section class="hero-section py-5 bg-white border-bottom position-relative overflow-hidden">
+    <div class="container py-lg-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3">
+                    <i class="bi bi-patch-check-fill me-1"></i> Version 1.0 Live
+                </span>
+                <h1 class="display-4 fw-bold text-dark lh-tight mb-3">
+                    Modern Academic Attendance <span class="text-primary">Management Made Simple</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Attendex provides unified attendance tracking, multi-role security, real-time analytics, and CSV exports designed specifically for colleges, faculty, and students.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a th:href="@{/login}" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Portal
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <!-- Direct Login Widget -->
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-primary text-white py-3 text-center">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2"></i>Direct Portal Login</h5>
+                        <small class="text-white-50">Enter credentials provided by administration</small>
+                    </div>
+                    <div class="card-body p-4 bg-white">
+                        <form th:action="@{/login}" method="post">
+                            <div class="mb-3">
+                                <label for="homeUsername" class="form-label small fw-semibold text-muted">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                                    <input type="text" id="homeUsername" name="username" class="form-control border-start-0 ps-0"
+                                           placeholder="Enter username" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="homePassword" class="form-label small fw-semibold text-muted">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                                    <input type="password" id="homePassword" name="password" class="form-control border-start-0 ps-0"
+                                           placeholder="Enter password" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 shadow-sm fw-semibold">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-footer bg-light text-center py-2 border-0">
+                        <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Administrator, Faculty &amp; Student direct access</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- System Stats -->
+<section class="py-4 bg-white border-bottom">
+    <div class="container">
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3">
+                <div class="p-3 border rounded-3 bg-light">
+                    <h2 class="fw-bold text-primary mb-1" th:text="${stats != null ? stats.totalStudents : 0}">0</h2>
+                    <span class="text-muted small text-uppercase fw-semibold">Active Students</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 border rounded-3 bg-light">
+                    <h2 class="fw-bold text-success mb-1" th:text="${stats != null ? stats.totalFaculty : 0}">0</h2>
+                    <span class="text-muted small text-uppercase fw-semibold">Faculty Staff</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 border rounded-3 bg-light">
+                    <h2 class="fw-bold text-info mb-1" th:text="${stats != null ? stats.totalSubjects : 0}">0</h2>
+                    <span class="text-muted small text-uppercase fw-semibold">Course Subjects</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 border rounded-3 bg-light">
+                    <h2 class="fw-bold text-warning mb-1" th:text="${stats != null ? stats.totalDepartments : 0}">0</h2>
+                    <span class="text-muted small text-uppercase fw-semibold">Departments</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary text-uppercase fw-bold letter-spacing-1">Key Capabilities</h6>
+            <h2 class="fw-bold text-dark">Everything You Need for Campus Attendance</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">Attendex automates the complete attendance workflow from period-marking to department analytics.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift">
+                    <div class="feature-icon bg-primary bg-opacity-10 text-primary rounded-3 mb-3 d-inline-flex p-3 fs-3">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Role-Based Security</h5>
+                    <p class="text-muted mb-0">Role-specific authorization ensuring students access only their records while faculty manage assigned classes.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift">
+                    <div class="feature-icon bg-success bg-opacity-10 text-success rounded-3 mb-3 d-inline-flex p-3 fs-3">
+                        <i class="bi bi-calendar2-check"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Duplicate Prevention</h5>
+                    <p class="text-muted mb-0">Database-backed unique constraints prevent accidental duplicate entries for the same period and class.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift">
+                    <div class="feature-icon bg-warning bg-opacity-10 text-warning rounded-3 mb-3 d-inline-flex p-3 fs-3">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Defaulter Warnings</h5>
+                    <p class="text-muted mb-0">Automated visual alerts for students falling below the mandatory 75% attendance threshold.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift">
+                    <div class="feature-icon bg-info bg-opacity-10 text-info rounded-3 mb-3 d-inline-flex p-3 fs-3">
+                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">CSV Reports</h5>
+                    <p class="text-muted mb-0">One-click export of complete attendance histories by section, subject, and date range.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift">
+                    <div class="feature-icon bg-danger bg-opacity-10 text-danger rounded-3 mb-3 d-inline-flex p-3 fs-3">
+                        <i class="bi bi-speedometer"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Subject Progress</h5>
+                    <p class="text-muted mb-0">Interactive progress bars detailing present, late, and absent tallies across all enrolled subjects.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift">
+                    <div class="feature-icon bg-secondary bg-opacity-10 text-secondary rounded-3 mb-3 d-inline-flex p-3 fs-3">
+                        <i class="bi bi-database-check"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Persistent MySQL</h5>
+                    <p class="text-muted mb-0">Complete relational integrity using Spring Data JPA, Hibernate, and reliable local MySQL storage.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5 bg-white border-top border-bottom">
+    <div class="container py-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3">About Attendex</span>
+                <h2 class="fw-bold text-dark mb-3">Engineered for Academic Institutions</h2>
+                <p class="text-muted mb-3">
+                    Attendex is a full-stack Java attendance portal designed to eliminate paper-based logs and fragmented spreadsheets. It brings administrators, professors, and students onto a unified, transparent platform.
+                </p>
+                <ul class="list-unstyled text-muted mb-4">
+                    <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i> Spring Boot 3 &amp; Java 21 core architecture</li>
+                    <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i> BCrypt password hashing &amp; CSRF protection</li>
+                    <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i> Fully responsive interface for mobile and desktop</li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-4 bg-light rounded-4 border">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-terminal me-2 text-primary"></i>System Credentials</h5>
+                    <p class="small text-muted mb-3">Default accounts pre-configured for local testing and administration:</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered bg-white mb-0">
+                            <thead class="table-light"><tr><th>Role</th><th>Username</th><th>Password</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="badge bg-primary">Admin</span></td><td><code>admin</code></td><td><code>admin123</code></td></tr>
+                                <tr><td><span class="badge bg-info">Student</span></td><td><code>kommu</code></td><td><em>User defined</em></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h6 class="text-primary text-uppercase fw-bold letter-spacing-1">Support &amp; Contact</h6>
+                <h2 class="fw-bold text-dark mb-3">Need Assistance with Attendex?</h2>
+                <p class="text-muted mb-4">
+                    Contact your department administrator or IT support desk for account resets, subject enrollments, and academic timetable adjustments.
+                </p>
+                <div class="d-flex justify-content-center gap-4 text-muted">
+                    <span><i class="bi bi-envelope-fill text-primary me-2"></i>support@attendex.college.edu</span>
+                    <span><i class="bi bi-geo-alt-fill text-primary me-2"></i>Campus Admin Block</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

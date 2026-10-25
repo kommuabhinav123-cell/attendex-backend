@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Low Attendance Students')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-exclamation-triangle text-danger me-2"></i>Low Attendance Students</h3>
+            <p class="text-muted small mb-0">List of students in your assigned subjects with attendance below <span th:text="${minPercentage + '%'}"></span>.</p>
+        </div>
+        <a th:href="@{/faculty/dashboard}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">Roll Number</th>
+                            <th>Student Name</th>
+                            <th>Subject</th>
+                            <th>Subject Code</th>
+                            <th>Attended / Total</th>
+                            <th>Current %</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${lowAttendanceList}">
+                            <td class="ps-4 fw-bold" th:text="${item.rollNumber}"></td>
+                            <td th:text="${item.studentName}"></td>
+                            <td th:text="${item.subjectName}"></td>
+                            <td><span class="badge bg-secondary-subtle text-dark" th:text="${item.subjectCode}"></span></td>
+                            <td th:text="${item.attendedSessions + ' / ' + item.totalSessions}"></td>
+                            <td>
+                                <span class="fw-bold text-danger" th:text="${#numbers.formatDecimal(item.percentage, 1, 1) + '%'}"></span>
+                            </td>
+                            <td>
+                                <span class="badge bg-danger rounded-pill"><i class="bi bi-exclamation-circle me-1"></i> Defaulter</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(lowAttendanceList)}">
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-check-circle-fill text-success fs-1 d-block mb-2"></i>
+                                Excellent! No students currently fall below the <span th:text="${minPercentage + '%'}"></span> minimum threshold.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

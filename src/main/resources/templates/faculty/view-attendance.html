@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Session Attendance Details')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-file-earmark-check text-primary me-2"></i>Attendance Log &amp; Verification</h3>
+            <p class="text-muted small mb-0">Review marked attendance, make authorized updates, or finalize the session.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/faculty/dashboard}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+            <form th:if="${session != null and session.status.name() == 'OPEN'}"
+                  th:action="@{/faculty/attendance/session/{id}/close(id=${session.id})}" method="post">
+                <button type="submit" class="btn btn-warning" onclick="return confirm('Finalize and close this attendance session?')">
+                    <i class="bi bi-lock-fill me-1"></i> Finalize Session
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Session Overview Card -->
+    <div th:if="${session != null}" class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <small class="text-muted text-uppercase fw-bold d-block">Subject</small>
+                <span class="fs-5 fw-bold text-dark" th:text="${session.subject.name}"></span>
+                <span class="badge bg-primary ms-1" th:text="${session.subject.code}"></span>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted text-uppercase fw-bold d-block">Class Section</small>
+                <span class="fs-5 fw-bold text-dark" th:text="${session.classSection.name}"></span>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted text-uppercase fw-bold d-block">Date &amp; Period</small>
+                <span class="fs-5 fw-bold text-dark" th:text="${session.sessionDate}"></span>
+                <span class="badge bg-light text-dark border" th:text="'Period ' + ${session.sessionNumber}"></span>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted text-uppercase fw-bold d-block">Session Status</small>
+                <span class="badge rounded-pill fs-6"
+                      th:classappend="${session.status.name() == 'OPEN'} ? 'bg-success' : 'bg-secondary'"
+                      th:text="${session.status}"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Records Table with Inline Update -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-people me-2"></i>Marked Student Records</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Roll Number</th>
+                            <th>Student Name</th>
+                            <th>Current Status</th>
+                            <th>Remarks</th>
+                            <th th:if="${session != null and session.status.name() == 'OPEN'}" class="text-end pe-4">Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r, iter : ${records}">
+                            <td class="ps-4 text-muted" th:text="${iter.index + 1}"></td>
+                            <td class="fw-bold" th:text="${r.student.rollNumber}"></td>
+                            <td th:text="${r.student.user.fullName}"></td>
+                            <td>
+                                <span class="badge rounded-pill"
+                                      th:classappend="${r.status.name() == 'PRESENT'} ? 'bg-success' : (${r.status.name() == 'LATE'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      th:text="${r.status}"></span>
+                            </td>
+                            <td class="text-muted small" th:text="${r.remarks ?: '-'}"></td>
+                            <td th:if="${session != null and session.status.name() == 'OPEN'}" class="text-end pe-4">
+                                <form th:action="@{/faculty/attendance/record/{id}/update(id=${r.id})}" method="post" class="d-inline-flex gap-2 justify-content-end">
+                                    <input type="hidden" name="sessionId" th:value="${session.id}">
+                                    <select name="status" class="form-select form-select-sm" style="width: 110px;">
+                                        <option value="PRESENT" th:selected="${r.status.name() == 'PRESENT'}">Present</option>
+                                        <option value="ABSENT" th:selected="${r.status.name() == 'ABSENT'}">Absent</option>
+                                        <option value="LATE" th:selected="${r.status.name() == 'LATE'}">Late</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(records)}">
+                            <td colspan="6" class="text-center py-5 text-muted">No attendance records in this session.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

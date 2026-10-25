@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Class Sections')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="container mt-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h3 class="mb-3"><i class="bi bi-diagram-3"></i> Class Sections</h3>
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-header bg-primary text-white"><h6 class="mb-0">Add Section</h6></div>
+                <div class="card-body">
+                    <form th:action="@{/admin/sections/add}" method="post">
+                        <div class="mb-2"><label class="form-label">Name *</label><input type="text" name="name" class="form-control" required placeholder="e.g. CS-A"></div>
+                        <div class="mb-2"><label class="form-label">Year *</label><input type="number" name="year" class="form-control" min="1" max="6" value="1" required></div>
+                        <div class="mb-2"><label class="form-label">Semester *</label><input type="number" name="semester" class="form-control" min="1" max="12" value="1" required></div>
+                        <div class="mb-2">
+                            <label class="form-label">Course *</label>
+                            <select name="courseId" class="form-select" required>
+                                <option value="">-- Select --</option>
+                                <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.name + ' (' + c.code + ')'}"></option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light"><tr><th>Name</th><th>Year</th><th>Semester</th><th>Course</th></tr></thead>
+                        <tbody>
+                            <tr th:each="s : ${sections}">
+                                <td th:text="${s.name}"></td>
+                                <td th:text="${s.year}"></td>
+                                <td th:text="${s.semester}"></td>
+                                <td th:text="${s.course.name}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(sections)}"><td colspan="4" class="text-center text-muted">No sections</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary mt-3"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

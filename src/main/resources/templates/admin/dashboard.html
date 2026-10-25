@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Admin Dashboard')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <nav class="col-md-3 col-lg-2 sidebar bg-white border-end py-3 min-vh-100">
+            <div class="px-3 mb-3 text-uppercase text-muted small fw-bold">Admin Navigation</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-primary fw-semibold active bg-primary-subtle rounded-3" th:href="@{/admin/dashboard}">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/students}">
+                        <i class="bi bi-mortarboard me-2"></i> Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/faculty}">
+                        <i class="bi bi-person-badge me-2"></i> Faculty Staff
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/departments}">
+                        <i class="bi bi-building me-2"></i> Departments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/courses}">
+                        <i class="bi bi-book me-2"></i> Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/sections}">
+                        <i class="bi bi-diagram-3 me-2"></i> Class Sections
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/subjects}">
+                        <i class="bi bi-journal-text me-2"></i> Subjects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/assignments}">
+                        <i class="bi bi-person-lines-fill me-2"></i> Faculty Assign
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/enrollments}">
+                        <i class="bi bi-journal-plus me-2"></i> Student Enroll
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/attendance}">
+                        <i class="bi bi-calendar-check me-2"></i> Attendance Log
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/reports}">
+                        <i class="bi bi-file-earmark-bar-graph me-2"></i> Attendance Reports
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-dark hover-bg-light rounded-3" th:href="@{/admin/profile}">
+                        <i class="bi bi-person-circle me-2"></i> My Profile
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="col-md-9 col-lg-10 p-4">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Header -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold text-dark mb-1">Administrative Overview</h3>
+                    <p class="text-muted small mb-0">System status and live attendance statistics from MySQL.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/admin/reports}" class="btn btn-outline-primary btn-sm"><i class="bi bi-download me-1"></i> Export Reports</a>
+                    <a th:href="@{/admin/students/add}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i> Quick Add Student</a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-bold">Total Students</span>
+                                <h2 class="fw-bold text-primary mb-0 mt-1" th:text="${stats.totalStudents}">0</h2>
+                            </div>
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
+                                <i class="bi bi-mortarboard fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-bold">Active Faculty</span>
+                                <h2 class="fw-bold text-success mb-0 mt-1" th:text="${stats.totalFaculty}">0</h2>
+                            </div>
+                            <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+                                <i class="bi bi-person-badge fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-bold">Subjects</span>
+                                <h2 class="fw-bold text-info mb-0 mt-1" th:text="${stats.totalSubjects}">0</h2>
+                            </div>
+                            <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info">
+                                <i class="bi bi-journal-text fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-bold">Departments</span>
+                                <h2 class="fw-bold text-warning mb-0 mt-1" th:text="${stats.totalDepartments}">0</h2>
+                            </div>
+                            <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
+                                <i class="bi bi-building fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tables / Quick Info -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-mortarboard text-primary me-2"></i>Recent Registered Students</h6>
+                            <a th:href="@{/admin/students}" class="small text-decoration-none">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light small text-muted">
+                                    <tr><th class="ps-3">Roll No</th><th>Name</th><th>Status</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s : ${recentStudents}">
+                                        <td class="ps-3 fw-semibold" th:text="${s.rollNumber}"></td>
+                                        <td th:text="${s.user.fullName}"></td>
+                                        <td><span class="badge bg-success rounded-pill">Active</span></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(recentStudents)}">
+                                        <td colspan="3" class="text-center py-4 text-muted small">No students registered yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-person-badge text-success me-2"></i>Active Teaching Faculty</h6>
+                            <a th:href="@{/admin/faculty}" class="small text-decoration-none">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light small text-muted">
+                                    <tr><th class="ps-3">Emp ID</th><th>Faculty Name</th><th>Department</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="f : ${recentFaculty}">
+                                        <td class="ps-3 fw-semibold" th:text="${f.employeeId}"></td>
+                                        <td th:text="${f.user.fullName}"></td>
+                                        <td th:text="${f.department != null ? f.department.name : '-'}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(recentFaculty)}">
+                                        <td colspan="3" class="text-center py-4 text-muted small">No faculty members registered yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

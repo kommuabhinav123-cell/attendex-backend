@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mark Attendance')}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1"><i class="bi bi-check2-square text-success me-2"></i>Mark Attendance</h3>
+            <p class="text-muted small mb-0">Record student attendance per period. Absent alerts are automatically dispatched to parents via SMS.</p>
+        </div>
+        <a th:href="@{/faculty/dashboard}" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    </div>
+
+    <!-- Step 1: Select Assignment -->
+    <div th:if="${selectedAssignment == null}" class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-collection me-2"></i>Select Assigned Class &amp; Subject</h6>
+        </div>
+        <div class="card-body p-4">
+            <div th:if="${#lists.isEmpty(assignments)}" class="text-center py-5 text-muted">
+                <i class="bi bi-journal-x fs-1 d-block mb-2 opacity-50"></i>
+                No classes assigned to your faculty profile yet. Please contact the administrator.
+            </div>
+            <div th:unless="${#lists.isEmpty(assignments)}" class="row g-3">
+                <div th:each="a : ${assignments}" class="col-md-6 col-lg-4">
+                    <div class="card border h-100 shadow-sm rounded-3 hover-lift">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-primary-subtle text-primary fw-semibold" th:text="${a.subject.code}"></span>
+                                <span class="badge bg-light text-dark border" th:text="'Section ' + ${a.classSection.name}"></span>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1" th:text="${a.subject.name}"></h5>
+                            <p class="text-muted small mb-3">
+                                Year <span th:text="${a.classSection.year}"></span>, Semester <span th:text="${a.classSection.semester}"></span>
+                            </p>
+                            <a th:href="@{/faculty/attendance/mark(assignmentId=${a.id})}" class="btn btn-outline-success btn-sm w-100 rounded-pill">
+                                <i class="bi bi-check-circle me-1"></i> Mark Attendance
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Mark Attendance -->
+    <div th:if="${selectedAssignment != null}">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold" th:text="'Marking: ' + ${selectedAssignment.subject.name} + ' — Section ' + ${selectedAssignment.classSection.name}"></h6>
+                <span class="badge bg-white text-success fw-semibold" th:text="${selectedAssignment.subject.code}"></span>
+            </div>
+            <div class="card-body p-4">
+                <!-- SMS Alert Notice -->
+                <div class="alert alert-info border-0 shadow-sm rounded-3 py-2 px-3 small d-flex align-items-center mb-4">
+                    <i class="bi bi-chat-dots-fill text-info fs-5 me-2"></i>
+                    <div>
+                        <strong>Parent SMS Notification Active:</strong> Whenever a student is marked <strong>ABSENT</strong>, an automated alert SMS will be sent directly to their registered parent/guardian mobile number.
+                    </div>
+                </div>
+
+                <form th:action="@{/faculty/attendance/mark}" method="post">
+                    <input type="hidden" name="subjectId" th:value="${selectedAssignment.subject.id}">
+                    <input type="hidden" name="classSectionId" th:value="${selectedAssignment.classSection.id}">
+
+                    <div class="row g-3 mb-4 align-items-end bg-light p-3 rounded-3 border">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-muted">Attendance Date *</label>
+                            <input type="date" name="sessionDate" class="form-control" th:value="${today}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold text-muted">Period / Session Number *</label>
+                            <input type="number" name="sessionNumber" class="form-control" value="1" min="1" max="10" required>
+                        </div>
+                        <div class="col-md-5 d-flex gap-2">
+                            <button type="button" class="btn btn-outline-success btn-sm flex-fill" onclick="markAll('PRESENT')">
+                                <i class="bi bi-check-all me-1"></i> All Present
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm flex-fill" onclick="markAll('ABSENT')">
+                                <i class="bi bi-x-circle me-1"></i> All Absent
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-4">
+                            <thead class="table-light text-uppercase small text-muted">
+                                <tr>
+                                    <th class="ps-3" style="width: 50px;">#</th>
+                                    <th>Roll Number</th>
+                                    <th>Student Full Name</th>
+                                    <th>Parent Contact</th>
+                                    <th style="width: 220px;">Attendance Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="entry, iter : ${entries}">
+                                    <td class="ps-3 text-muted small" th:text="${iter.count}"></td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${entry.rollNumber}"></span></td>
+                                    <td class="fw-semibold text-dark" th:text="${entry.studentName}"></td>
+                                    <td class="small text-muted">
+                                        <i class="bi bi-telephone me-1"></i> Registered Mobile
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="studentIds" th:value="${entry.studentId}">
+                                        <select name="statuses" class="form-select form-select-sm status-select fw-semibold" onchange="highlightRow(this)">
+                                            <option value="PRESENT" class="text-success" selected>✓ Present</option>
+                                            <option value="ABSENT" class="text-danger">✗ Absent (SMS Alert)</option>
+                                            <option value="LATE" class="text-warning">⏰ Late</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(entries)}">
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="bi bi-people fs-1 d-block mb-2 opacity-50"></i>
+                                        No active students enrolled in this class section.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button th:unless="${#lists.isEmpty(entries)}" type="submit" class="btn btn-success px-4 rounded-pill">
+                            <i class="bi bi-check2-circle me-1"></i> Submit &amp; Send Absence SMS
+                        </button>
+                        <a th:href="@{/faculty/attendance/mark}" class="btn btn-outline-secondary rounded-pill">Change Class</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function markAll(status) {
+        document.querySelectorAll('.status-select').forEach(s => {
+            s.value = status;
+            highlightRow(s);
+        });
+    }
+
+    function highlightRow(selectElement) {
+        const row = selectElement.closest('tr');
+        if (!row) return;
+        if (selectElement.value === 'ABSENT') {
+            row.classList.add('table-danger');
+            row.classList.remove('table-warning');
+        } else if (selectElement.value === 'LATE') {
+            row.classList.add('table-warning');
+            row.classList.remove('table-danger');
+        } else {
+            row.classList.remove('table-danger', 'table-warning');
+        }
+    }
+</script>
+</body>
+</html>

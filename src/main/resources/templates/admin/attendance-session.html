@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin — Session Detail')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="d-flex align-items-center mb-4 gap-3">
+        <a th:href="@{/admin/attendance}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <div>
+            <h4 class="fw-bold text-dark mb-0"><i class="bi bi-calendar-event text-primary me-2"></i>Session Detail</h4>
+            <p class="text-muted small mb-0" th:if="${session != null}"
+               th:text="${session.subject.name + ' — ' + session.classSection.name + ' — ' + session.sessionDate + ' Period ' + session.sessionNumber}">
+            </p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-people text-primary me-2"></i>
+                Attendance Records
+                <span class="badge bg-primary-subtle text-primary ms-2" th:text="${#lists.size(records)}">0</span>
+            </h6>
+            <span class="badge rounded-pill px-3"
+                  th:if="${session != null}"
+                  th:classappend="${session.status.name() == 'OPEN'} ? 'bg-success' : 'bg-secondary'"
+                  th:text="${session.status}"></span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Student Name</th>
+                            <th>Roll Number</th>
+                            <th class="text-center">Status</th>
+                            <th>Remarks</th>
+                            <th>Marked At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r, idx : ${records}">
+                            <td class="ps-4 text-muted small" th:text="${idx.count}"></td>
+                            <td class="fw-semibold text-dark" th:text="${r.student.user.fullName}"></td>
+                            <td>
+                                <span class="badge bg-light text-dark border" th:text="${r.student.rollNumber}"></span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill"
+                                      th:classappend="${r.status.name() == 'PRESENT'} ? 'bg-success' : (${r.status.name() == 'LATE'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      th:text="${r.status}"></span>
+                            </td>
+                            <td class="text-muted small" th:text="${r.remarks ?: '-'}"></td>
+                            <td class="text-muted small" th:text="${r.markedAt}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(records)}">
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                                No attendance records for this session.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

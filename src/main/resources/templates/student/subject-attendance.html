@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Subject Attendance')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="container mt-4">
+    <h3 class="mb-3"><i class="bi bi-journal-check"></i> Attendance: <span th:text="${percentage.subjectName}"></span></h3>
+
+    <!-- Summary Card -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Percentage</h6>
+                    <h2 th:classappend="${percentage.percentage < minPercentage} ? 'text-danger' : 'text-success'"
+                        th:text="${#numbers.formatDecimal(percentage.percentage, 1, 1) + '%'}">0%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center bg-success text-white">
+                <div class="card-body"><h6>Present</h6><h3 th:text="${percentage.presentCount}"></h3></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center bg-warning text-dark">
+                <div class="card-body"><h6>Late</h6><h3 th:text="${percentage.lateCount}"></h3></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center bg-danger text-white">
+                <div class="card-body"><h6>Absent</h6><h3 th:text="${percentage.absentCount}"></h3></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Records Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white"><h6 class="mb-0">Attendance Records</h6></div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Date</th><th>Period</th><th>Status</th><th>Remarks</th></tr></thead>
+                <tbody>
+                    <tr th:each="r : ${records}">
+                        <td th:text="${r.attendanceSession.sessionDate}"></td>
+                        <td th:text="${r.attendanceSession.sessionNumber}"></td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${r.status.name() == 'PRESENT'} ? 'bg-success' : (${r.status.name() == 'LATE'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                  th:text="${r.status}"></span>
+                        </td>
+                        <td th:text="${r.remarks ?: '-'}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(records)}"><td colspan="4" class="text-center text-muted">No records</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <a th:href="@{/student/dashboard}" class="btn btn-outline-secondary mt-3"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
