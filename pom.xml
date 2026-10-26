@@ -66,11 +66,18 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- H2 Database for testing (lightweight, no install needed) -->
+        <!-- PostgreSQL JDBC Driver (for Render Cloud PostgreSQL) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- H2 Database (standalone fallback for instant zero-config cloud boot) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Spring Boot Test -->
