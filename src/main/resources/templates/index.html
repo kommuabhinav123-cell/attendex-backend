@@ -187,17 +187,13 @@
             </div>
             <div class="col-lg-6">
                 <div class="p-4 bg-light rounded-4 border">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-terminal me-2 text-primary"></i>System Credentials</h5>
-                    <p class="small text-muted mb-3">Default accounts pre-configured for local testing and administration:</p>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered bg-white mb-0">
-                            <thead class="table-light"><tr><th>Role</th><th>Username</th><th>Password</th></tr></thead>
-                            <tbody>
-                                <tr><td><span class="badge bg-primary">Admin</span></td><td><code>admin</code></td><td><code>admin123</code></td></tr>
-                                <tr><td><span class="badge bg-info">Student</span></td><td><code>kommu</code></td><td><em>User defined</em></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-shield-check me-2 text-primary"></i>Enterprise Security &amp; Access</h5>
+                    <p class="small text-muted mb-3">Institution accounts are safeguarded with industry-standard role-based controls:</p>
+                    <ul class="list-unstyled text-muted small mb-0">
+                        <li class="mb-2"><i class="bi bi-lock-fill text-primary me-2"></i><strong>Centralized Provisioning:</strong> Accounts are assigned and managed by institution administrators.</li>
+                        <li class="mb-2"><i class="bi bi-fingerprint text-primary me-2"></i><strong>BCrypt Password Hashing:</strong> Credentials are encrypted with salted one-way hashing.</li>
+                        <li class="mb-0"><i class="bi bi-shield-shaded text-primary me-2"></i><strong>Zero Public Exposure:</strong> System credentials are kept strictly private.</li>
+                    </ul>
                 </div>
             </div>
         </div>
