@@ -43,10 +43,10 @@ public class SecurityConfig {
                 config.setAllowCredentials(true);
                 return config;
             }))
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/api/**"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/logout", "/api/**"))
             .authorizeHttpRequests(auth -> auth
                 // Public resources
-                .requestMatchers("/", "/login", "/register", "/error", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/login", "/register", "/error", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 // Role-based access
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/faculty/**").hasRole("FACULTY")

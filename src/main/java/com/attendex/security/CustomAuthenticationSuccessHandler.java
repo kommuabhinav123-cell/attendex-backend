@@ -36,6 +36,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             }
         }
 
-        response.sendRedirect(redirectUrl);
+        String forwardedHost = request.getHeader("X-Forwarded-Host");
+        String forwardedProto = request.getHeader("X-Forwarded-Proto");
+        if (forwardedHost != null && !forwardedHost.isBlank()) {
+            String proto = (forwardedProto != null && !forwardedProto.isBlank()) ? forwardedProto : "https";
+            response.sendRedirect(proto + "://" + forwardedHost + redirectUrl);
+        } else {
+            response.sendRedirect(redirectUrl);
+        }
     }
 }
