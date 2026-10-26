@@ -25,7 +25,15 @@ public class AttendexApplication {
         if (dbUrl == null || dbUrl.isBlank()) {
             dbUrl = System.getenv("DATABASE_URL");
         }
+        if (dbUrl == null || dbUrl.isBlank()) {
+            dbUrl = System.getenv("SPRING_DATASOURCE_URL");
+        }
+
         if (dbUrl != null && !dbUrl.isBlank()) {
+            String jdbcUrl = dbUrl;
+            String user = System.getenv("DB_USERNAME");
+            String pass = System.getenv("DB_PASSWORD");
+
             if (dbUrl.startsWith("postgres://") || dbUrl.startsWith("postgresql://")) {
                 try {
                     java.net.URI uri = new java.net.URI(dbUrl);
@@ -34,16 +42,16 @@ public class AttendexApplication {
                     String path = uri.getPath();
                     String userInfo = uri.getUserInfo();
                     
-                    String jdbcUrl = "jdbc:postgresql://" + host + ":" + port + path;
-                    System.setProperty("spring.datasource.url", jdbcUrl);
+                    jdbcUrl = "jdbc:postgresql://" + host + ":" + port + path;
                     if (userInfo != null && userInfo.contains(":")) {
                         String[] parts = userInfo.split(":", 2);
-                        System.setProperty("spring.datasource.username", parts[0]);
-                        System.setProperty("spring.datasource.password", parts[1]);
+                        user = parts[0];
+                        pass = parts[1];
                     }
+                    System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
                 } catch (Exception e) {
                     if (!dbUrl.startsWith("jdbc:")) {
-                        System.setProperty("spring.datasource.url", "jdbc:" + dbUrl);
+                        jdbcUrl = "jdbc:" + dbUrl;
                     }
                 }
             } else if (dbUrl.startsWith("mysql://")) {
@@ -54,28 +62,54 @@ public class AttendexApplication {
                     String path = uri.getPath();
                     String userInfo = uri.getUserInfo();
                     
-                    String jdbcUrl = "jdbc:mysql://" + host + ":" + port + path + "?useSSL=false&allowPublicKeyRetrieval=true";
-                    System.setProperty("spring.datasource.url", jdbcUrl);
+                    jdbcUrl = "jdbc:mysql://" + host + ":" + port + path + "?useSSL=false&allowPublicKeyRetrieval=true";
                     if (userInfo != null && userInfo.contains(":")) {
                         String[] parts = userInfo.split(":", 2);
-                        System.setProperty("spring.datasource.username", parts[0]);
-                        System.setProperty("spring.datasource.password", parts[1]);
+                        user = parts[0];
+                        pass = parts[1];
                     }
+                    System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
                 } catch (Exception e) {
                     if (!dbUrl.startsWith("jdbc:")) {
-                        System.setProperty("spring.datasource.url", "jdbc:" + dbUrl);
+                        jdbcUrl = "jdbc:" + dbUrl;
                     }
                 }
             }
+
+            System.setProperty("spring.datasource.url", jdbcUrl);
+            System.setProperty("SPRING_DATASOURCE_URL", jdbcUrl);
+            System.setProperty("DB_URL", jdbcUrl);
+            if (user != null) {
+                System.setProperty("spring.datasource.username", user);
+                System.setProperty("SPRING_DATASOURCE_USERNAME", user);
+                System.setProperty("DB_USERNAME", user);
+            }
+            if (pass != null) {
+                System.setProperty("spring.datasource.password", pass);
+                System.setProperty("SPRING_DATASOURCE_PASSWORD", pass);
+                System.setProperty("DB_PASSWORD", pass);
+            }
         } else {
-            // If deployed on Render or cloud with no database URL configured, fallback to embedded H2 file database
-            String renderEnv = System.getenv("RENDER");
-            String portEnv = System.getenv("PORT");
-            if (renderEnv != null || portEnv != null || "true".equalsIgnoreCase(System.getenv("USE_H2"))) {
-                System.setProperty("spring.datasource.url", "jdbc:h2:file:./data/attendex_db;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
+            // Local vs Cloud check:
+            // If in cloud (RENDER or PORT is set), and no DB URL is set, use H2 embedded file database
+            if (System.getenv("RENDER") != null || System.getenv("PORT") != null) {
+                String h2Url = "jdbc:h2:file:./data/attendex_db;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false";
+                System.setProperty("spring.datasource.url", h2Url);
+                System.setProperty("SPRING_DATASOURCE_URL", h2Url);
+                System.setProperty("DB_URL", h2Url);
                 System.setProperty("spring.datasource.username", "sa");
                 System.setProperty("spring.datasource.password", "");
                 System.setProperty("spring.datasource.driver-class-name", "org.h2.Driver");
+                System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+            } else {
+                // Local dev machine: default to local MySQL
+                String mysqlUrl = "jdbc:mysql://localhost:3306/attendex_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+                System.setProperty("spring.datasource.url", mysqlUrl);
+                System.setProperty("SPRING_DATASOURCE_URL", mysqlUrl);
+                System.setProperty("DB_URL", mysqlUrl);
+                System.setProperty("spring.datasource.username", "root");
+                System.setProperty("spring.datasource.password", "");
+                System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
             }
         }
     }
