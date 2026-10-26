@@ -1,32 +1,31 @@
 # ===============================================
-# Attendex Backend - Multi-Stage Production Build
+# Attendex Backend - Production Cloud Dockerfile
 # ===============================================
 
-# Stage 1: Build the Spring Boot application using Maven and Temurin JDK 21
-FROM eclipse-temurin:21-jdk-jammy AS build
+# Stage 1: Build the Spring Boot application using Maven 3.9 & Temurin JDK 21
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /workspace/app
 
-# Copy Maven descriptor and source code
+# Copy Maven descriptor and source files
 COPY pom.xml .
-COPY src src
+COPY src ./src
 
-# Install maven and package application (skip unit tests for fast reproducible builds)
-RUN apt-get update && apt-get install -y maven && \
-    mvn clean package -DskipTests
+# Package application JAR without running tests
+RUN mvn clean package -DskipTests
 
-# Stage 2: Minimal, secure JRE runtime
+# Stage 2: Secure, minimal JRE 21 runtime
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Run as a non-privileged user for enhanced cloud security
-RUN groupadd -r attendex && useradd -r -g attendex attendex
-USER attendex:attendex
+# Ensure data directory exists with write permissions for embedded storage
+RUN mkdir -p /app/data && chmod -R 777 /app/data
 
-# Copy compiled JAR artifact from builder
-COPY --from=build /workspace/app/target/*.jar app.jar
+# Copy built JAR artifact from builder stage
+COPY --from=build /workspace/app/target/*.jar /app/app.jar
 
-# Dynamic PORT support for Render, Railway, AWS, and Heroku
+# Render, Railway, AWS inject dynamic PORT
 ENV PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-Djava.awt.headless=true", "-Djava.security.egd=file:/dev/./urandom", "-Dserver.port=${PORT}", "-jar", "app.jar"]
+# Shell execution ensures dynamic ${PORT} environment variable is evaluated correctly
+CMD ["sh", "-c", "java -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-8080} -jar /app/app.jar"]

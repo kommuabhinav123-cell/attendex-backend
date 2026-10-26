@@ -70,7 +70,8 @@ public class AttendexApplication {
         } else {
             // If deployed on Render or cloud with no database URL configured, fallback to embedded H2 file database
             String renderEnv = System.getenv("RENDER");
-            if (renderEnv != null || "true".equalsIgnoreCase(System.getenv("USE_H2"))) {
+            String portEnv = System.getenv("PORT");
+            if (renderEnv != null || portEnv != null || "true".equalsIgnoreCase(System.getenv("USE_H2"))) {
                 System.setProperty("spring.datasource.url", "jdbc:h2:file:./data/attendex_db;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
                 System.setProperty("spring.datasource.username", "sa");
                 System.setProperty("spring.datasource.password", "");
