@@ -34,43 +34,49 @@ public class AttendexApplication {
             String user = System.getenv("DB_USERNAME");
             String pass = System.getenv("DB_PASSWORD");
 
-            if (dbUrl.startsWith("postgres://") || dbUrl.startsWith("postgresql://")) {
-                try {
-                    java.net.URI uri = new java.net.URI(dbUrl);
-                    String host = uri.getHost();
-                    int port = uri.getPort() == -1 ? 5432 : uri.getPort();
-                    String path = uri.getPath();
-                    String userInfo = uri.getUserInfo();
-                    
-                    jdbcUrl = "jdbc:postgresql://" + host + ":" + port + path;
-                    if (userInfo != null && userInfo.contains(":")) {
-                        String[] parts = userInfo.split(":", 2);
-                        user = parts[0];
-                        pass = parts[1];
-                    }
-                    System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-                } catch (Exception e) {
-                    if (!dbUrl.startsWith("jdbc:")) {
+            if (dbUrl.startsWith("postgres://") || dbUrl.startsWith("postgresql://") || dbUrl.startsWith("jdbc:postgresql:")) {
+                System.setProperty("spring.datasource.driver-class-name", "org.postgresql.Driver");
+                System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+                System.setProperty("spring.jpa.database-platform", "org.hibernate.dialect.PostgreSQLDialect");
+                
+                if (!dbUrl.startsWith("jdbc:")) {
+                    try {
+                        java.net.URI uri = new java.net.URI(dbUrl);
+                        String host = uri.getHost();
+                        int port = uri.getPort() == -1 ? 5432 : uri.getPort();
+                        String path = uri.getPath();
+                        String userInfo = uri.getUserInfo();
+                        
+                        jdbcUrl = "jdbc:postgresql://" + host + ":" + port + path;
+                        if (userInfo != null && userInfo.contains(":")) {
+                            String[] parts = userInfo.split(":", 2);
+                            user = parts[0];
+                            pass = parts[1];
+                        }
+                    } catch (Exception e) {
                         jdbcUrl = "jdbc:" + dbUrl;
                     }
                 }
-            } else if (dbUrl.startsWith("mysql://")) {
-                try {
-                    java.net.URI uri = new java.net.URI(dbUrl);
-                    String host = uri.getHost();
-                    int port = uri.getPort() == -1 ? 3306 : uri.getPort();
-                    String path = uri.getPath();
-                    String userInfo = uri.getUserInfo();
-                    
-                    jdbcUrl = "jdbc:mysql://" + host + ":" + port + path + "?useSSL=false&allowPublicKeyRetrieval=true";
-                    if (userInfo != null && userInfo.contains(":")) {
-                        String[] parts = userInfo.split(":", 2);
-                        user = parts[0];
-                        pass = parts[1];
-                    }
-                    System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-                } catch (Exception e) {
-                    if (!dbUrl.startsWith("jdbc:")) {
+            } else if (dbUrl.startsWith("mysql://") || dbUrl.startsWith("jdbc:mysql:")) {
+                System.setProperty("spring.datasource.driver-class-name", "com.mysql.cj.jdbc.Driver");
+                System.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+                System.setProperty("spring.jpa.database-platform", "org.hibernate.dialect.MySQLDialect");
+
+                if (!dbUrl.startsWith("jdbc:")) {
+                    try {
+                        java.net.URI uri = new java.net.URI(dbUrl);
+                        String host = uri.getHost();
+                        int port = uri.getPort() == -1 ? 3306 : uri.getPort();
+                        String path = uri.getPath();
+                        String userInfo = uri.getUserInfo();
+                        
+                        jdbcUrl = "jdbc:mysql://" + host + ":" + port + path + "?useSSL=false&allowPublicKeyRetrieval=true";
+                        if (userInfo != null && userInfo.contains(":")) {
+                            String[] parts = userInfo.split(":", 2);
+                            user = parts[0];
+                            pass = parts[1];
+                        }
+                    } catch (Exception e) {
                         jdbcUrl = "jdbc:" + dbUrl;
                     }
                 }

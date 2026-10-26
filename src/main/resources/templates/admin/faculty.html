@@ -26,7 +26,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light text-uppercase small text-muted">
                         <tr>
-                            <th class="ps-4">Employee ID</th>
+                            <th class="ps-4">User ID</th>
+                            <th>Employee ID</th>
                             <th>Faculty Name</th>
                             <th>Username</th>
                             <th>Email</th>
@@ -38,11 +39,14 @@
                     </thead>
                     <tbody>
                         <tr th:each="f : ${facultyList}">
-                            <td class="ps-4 fw-semibold text-dark" th:text="${f.employeeId}"></td>
+                            <td class="ps-4">
+                                <span class="badge bg-secondary-subtle text-dark border font-monospace fw-bold" th:text="'#' + ${f.user.id}">#1</span>
+                            </td>
+                            <td class="fw-semibold text-dark" th:text="${f.employeeId}"></td>
                             <td>
                                 <div class="fw-bold text-dark" th:text="${f.user.fullName}"></div>
                             </td>
-                            <td><code th:text="${f.user.username}"></code></td>
+                            <td><code class="text-success fw-bold" th:text="${f.user.username}"></code></td>
                             <td class="text-muted" th:text="${f.user.email}"></td>
                             <td th:text="${f.department != null ? f.department.name : '-'}"></td>
                             <td><span class="badge bg-light text-dark border" th:text="${f.designation != null ? f.designation : '-'}"></span></td>
@@ -65,7 +69,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(facultyList)}">
-                            <td colspan="8" class="text-center py-5 text-muted">
+                            <td colspan="9" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
                                 No faculty members found. Click "Add Faculty" to register a faculty account.
                             </td>

@@ -33,6 +33,10 @@
 
                     <ul class="list-group list-group-flush small">
                         <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">User ID:</span>
+                            <span class="badge bg-secondary-subtle text-dark border font-monospace fw-bold" th:text="'#' + ${faculty.user.id}">#1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted">Employee ID:</span>
                             <strong th:text="${faculty.employeeId}"></strong>
                         </li>

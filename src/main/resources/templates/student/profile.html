@@ -30,13 +30,20 @@
                         </div>
                         <div>
                             <h5 class="fw-bold text-dark mb-0" th:text="${student.user.fullName}">Student Name</h5>
-                            <span class="badge bg-primary-subtle text-primary" th:text="'Roll No: ' + ${student.rollNumber}"></span>
+                            <div class="d-flex gap-2 mt-1">
+                                <span class="badge bg-secondary-subtle text-dark border font-monospace" th:text="'User ID: #' + ${student.user.id}"></span>
+                                <span class="badge bg-primary-subtle text-primary" th:text="'Roll No: ' + ${student.rollNumber}"></span>
+                            </div>
                         </div>
                     </div>
 
                     <table class="table table-borderless align-middle mb-0">
                         <tr>
-                            <td class="text-muted small fw-semibold" style="width: 35%;">Username</td>
+                            <td class="text-muted small fw-semibold" style="width: 35%;">User ID</td>
+                            <td><span class="badge bg-secondary-subtle text-dark border font-monospace fw-bold" th:text="'#' + ${student.user.id}"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small fw-semibold">Username</td>
                             <td class="fw-semibold text-dark"><code th:text="${student.user.username}"></code></td>
                         </tr>
                         <tr>
