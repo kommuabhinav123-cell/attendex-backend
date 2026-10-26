@@ -17,7 +17,7 @@ public class ClassSection {
     @Column(nullable = false, length = 50)
     private String name; // e.g., "CS-A", "CS-B"
 
-    @Column(nullable = false)
+    @Column(name = "academic_year", nullable = false)
     private int year; // current academic year (1, 2, 3, 4)
 
     @Column(nullable = false)
