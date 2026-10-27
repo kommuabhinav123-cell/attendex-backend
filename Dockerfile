@@ -28,4 +28,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Shell execution ensures dynamic ${PORT} environment variable is evaluated correctly
-CMD ["sh", "-c", "java -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+CMD ["sh", "-c", "java -XX:TieredStopAtLevel=1 -XX:+UseSerialGC -Xss512k -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-8080} -jar /app/app.jar"]

@@ -52,8 +52,15 @@ public class DataInitializer implements CommandLineRunner {
         createRoleIfNotExists("ROLE_FACULTY");
         createRoleIfNotExists("ROLE_STUDENT");
 
-        // Create default admin if no admin user exists
-        if (!userRepo.existsByUsername("admin")) {
+        // Ensure admin account exists, is active, and has synchronized password
+        userRepo.findByUsername("admin").ifPresentOrElse(admin -> {
+            if (!admin.isActive()) {
+                admin.setActive(true);
+            }
+            admin.setPassword(passwordEncoder.encode("admin123"));
+            userRepo.save(admin);
+            log.info("Admin account verified: active=true, credentials synced");
+        }, () -> {
             Role adminRole = roleRepo.findByName("ROLE_ADMIN").orElseThrow();
 
             User admin = new User();
@@ -61,16 +68,27 @@ public class DataInitializer implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode("admin123")); // BCrypt hash
             admin.setEmail("admin@attendex.com");
             admin.setFullName("System Administrator");
+            admin.setActive(true);
             admin.setRoles(Collections.singleton(adminRole));
             userRepo.save(admin);
+            log.info("Default admin account created: username=admin");
+        });
 
-            log.warn("╔══════════════════════════════════════════════╗");
-            log.warn("║  DEFAULT ADMIN ACCOUNT CREATED               ║");
-            log.warn("║  Username: admin                             ║");
-            log.warn("║  Password: admin123                          ║");
-            log.warn("║  ⚠ CHANGE THIS PASSWORD IMMEDIATELY!        ║");
-            log.warn("╚══════════════════════════════════════════════╝");
-        }
+        // Ensure seeded student 'abhinav' is active with synchronized password
+        userRepo.findByUsername("abhinav").ifPresent(studentUser -> {
+            studentUser.setActive(true);
+            studentUser.setPassword(passwordEncoder.encode("student123"));
+            userRepo.save(studentUser);
+            log.info("Student user 'abhinav' verified: active=true");
+        });
+
+        // Ensure seeded faculty 'rajesh_sharma' is active with synchronized password
+        userRepo.findByUsername("rajesh_sharma").ifPresent(facultyUser -> {
+            facultyUser.setActive(true);
+            facultyUser.setPassword(passwordEncoder.encode("faculty123"));
+            userRepo.save(facultyUser);
+            log.info("Faculty user 'rajesh_sharma' verified: active=true");
+        });
 
         // Seed academic data if no departments exist
         if (departmentRepo.count() == 0) {
